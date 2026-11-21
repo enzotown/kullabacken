@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Kullabacken — kör med Enzo</title>
+<meta name="description" content="Kör Enzos bil uppför och nedför kullarna. Håll gasen inne för att accelerera, bromsa i nedförsbacken. Lär dig fart, acceleration och gravitation.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kullabacken">
+<meta name="theme-color" content="#cfe9f6">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<style>
+  html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#bfe0f0;
+    font-family: "Trebuchet MS", Verdana, sans-serif; -webkit-user-select:none; user-select:none;
+    -webkit-tap-highlight-color:transparent; touch-action:none; }
+  #wrap { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+  canvas { display:block; touch-action:none; }
+  #ui { position:fixed; inset:0; pointer-events:none; }
+  .btn { position:absolute; bottom:4vh; width:22vh; height:22vh; max-width:170px; max-height:170px;
+    border-radius:50%; pointer-events:auto; display:flex; align-items:center; justify-content:center;
+    font-size:calc(3.4vh + 8px); font-weight:bold; color:#fff; box-shadow:0 8px 0 rgba(0,0,0,.18);
+    transition: transform .06s; }
+  .btn:active, .btn.down { transform: translateY(5px); box-shadow:0 3px 0 rgba(0,0,0,.18); }
+  #gas { left:4vh; background:#5ec48a; border:6px solid #fff; }
+  #broms { right:4vh; background:#ef8064; border:6px solid #fff; }
+  .arrow { font-size:1.2em; margin-right:.2em; }
+  #info { position:absolute; top:3vh; right:3vh; width:8vh; height:8vh; border-radius:50%;
+    background:#fff; color:#4a3f39; display:flex; align-items:center; justify-content:center;
+    font-size:4vh; pointer-events:auto; box-shadow:0 4px 0 rgba(0,0,0,.12); }
+  #panel { position:absolute; inset:0; background:rgba(74,63,57,.72); display:none;
+    align-items:center; justify-content:center; pointer-events:auto; padding:4vh; }
+  #panel.on { display:flex; }
+  #card { background:#fffaf3; border-radius:28px; max-width:640px; width:100%; padding:26px 30px 22px;
+    color:#4a3f39; box-shadow:0 14px 40px rgba(0,0,0,.25); }
+  #card h2 { margin:0 0 4px; font-size:26px; }
+  #card p { margin:10px 0; font-size:17px; line-height:1.45; }
+  #card b { color:#2f7d63; }
+  #close { margin-top:10px; background:#63bda8; color:#fff; border:0; border-radius:22px;
+    padding:12px 26px; font-size:18px; font-family:inherit; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="ui">
+  <div class="btn" id="gas"><span class="arrow">▲</span>GAS</div>
+  <div class="btn" id="broms"><span class="arrow">▼</span>BROMS</div>
+  <div id="info">?</div>
+  <div id="panel"><div id="card">
+    <h2>Vad händer i backen?</h2>
+    <p>När du håller in <b>GAS</b> blir bilen snabbare och snabbare. Det kallas <b>acceleration</b>.</p>
+    <p>När du håller in <b>BROMS</b> blir bilen långsammare. Det är också acceleration – fast åt andra hållet.</p>
+    <p>I en brant backe drar <b>gravitationen</b> bilen nedåt, även om du inte gasar. Ta fart innan backen!</p>
+    <p>Mätaren uppe i hörnet visar hur fort bilen åker just nu.</p>
+    <p>Gasar du för hårt på en gång reser sig bilen på bakhjulen – och då kan den <b>välta bakåt</b>. Bromsar du hårt i full fart tippar den <b>framåt</b>. Aj aj aj! Men det gör inget, bilen reser sig igen.</p>
+    <button id="close">Jag fattar!</button>
+  </div></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
