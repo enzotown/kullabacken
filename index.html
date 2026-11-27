@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Kullabacken — kör med Kotten</title>
+<meta name="description" content="Kör Kottens bil uppför och nedför kullarna. Håll gasen inne för att accelerera, bromsa i nedförsbacken. Lär dig fart, acceleration och gravitation.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kullabacken — kör med Kotten">
+<meta property="og:description" content="Kör Kottens bil uppför och nedför kullarna. Håll gasen inne för att accelerera, bromsa i nedförsbacken. Lär dig fart, acceleration och gravitation.">
+<meta property="og:image" content="https://kullabacken.shipholm.dev/delningsbild.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="sv_SE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kullabacken">
+<meta name="theme-color" content="#cfe9f6">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<style>
+  html, body { margin:0; padding:0; height:100%; overflow:hidden; background:#bfe0f0;
+    font-family: "Trebuchet MS", Verdana, sans-serif; -webkit-user-select:none; user-select:none;
+    -webkit-tap-highlight-color:transparent; touch-action:none; }
+  #wrap { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+  canvas { display:block; touch-action:none; }
+  #ui { position:fixed; inset:0; pointer-events:none; }
+  .btn { position:absolute; bottom:4vh; width:min(22vh,38vw); height:min(22vh,38vw); max-width:170px; max-height:170px;
+    border-radius:50%; pointer-events:auto; display:flex; align-items:center; justify-content:center;
+    font-size:calc(2.6vh + 9px); font-weight:bold; color:#fff; box-shadow:0 8px 0 rgba(0,0,0,.18);
+    transition: transform .06s; }
+  .btn:active, .btn.down { transform: translateY(5px); box-shadow:0 3px 0 rgba(0,0,0,.18); }
+  #gas { left:4vh; background:#5ec48a; border:6px solid #fff; }
+  #broms { right:4vh; background:#ef8064; border:6px solid #fff; }
+  .arrow { font-size:1.2em; margin-right:.2em; }
+  #info { position:absolute; top:3vh; right:3vh; width:8vh; height:8vh; border-radius:50%;
+    background:#fff; color:#4a3f39; display:flex; align-items:center; justify-content:center;
+    font-size:4vh; pointer-events:auto; box-shadow:0 4px 0 rgba(0,0,0,.12); }
+  #panel { position:absolute; inset:0; background:rgba(74,63,57,.72); display:none;
+    align-items:center; justify-content:center; pointer-events:auto; padding:4vh; }
+  #panel.on { display:flex; }
+  #card { background:#fffaf3; border-radius:28px; max-width:640px; width:100%; padding:26px 30px 22px;
+    color:#4a3f39; box-shadow:0 14px 40px rgba(0,0,0,.25); }
+  #card h2 { margin:0 0 4px; font-size:26px; }
+  #card p { margin:10px 0; font-size:17px; line-height:1.45; }
+  #card b { color:#2f7d63; }
+  #vand { position:fixed; inset:0; z-index:60; display:none; flex-direction:column;
+    align-items:center; justify-content:center; gap:14px; text-align:center;
+    background:rgba(255,250,243,.985); color:#4a3f39; padding:8vw; }
+  #vand.on { display:flex; }
+  .vand-ikon { font-size:min(34vh,44vw); width:1em; height:1em; color:#4a3f39; line-height:1; animation: vand 2.6s ease-in-out infinite; }
+  @keyframes vand { 0%,45% { transform:rotate(0deg); } 60%,100% { transform:rotate(90deg); } }
+  .vand-text { font-size:clamp(22px,7vw,34px); font-weight:bold; }
+  .vand-liten { font-size:clamp(15px,4.4vw,20px); color:#8a7a6d; }
+  #close { margin-top:10px; background:#63bda8; color:#fff; border:0; border-radius:22px;
+    padding:12px 26px; font-size:18px; font-family:inherit; }
+
+  .rostkredit { position:fixed; right:8px; bottom:6px; max-width:44vw; font:11px/1.35 "Trebuchet MS",Verdana,sans-serif;
+    color:#4a3f39; opacity:.55; text-align:right; z-index:40; }
+  .rostkredit a { color:inherit; }
+  @media (max-width:520px){ .rostkredit { font-size:10px; max-width:52vw; } }
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<style>
+/* Lgr22-märket: litet, diskret, alltid samma i alla spel */
+.lgr22{position:fixed;right:10px;bottom:10px;z-index:40;display:flex;align-items:center;
+  gap:5px;padding:4px 9px 4px 7px;border-radius:12px;background:rgba(255,250,243,.78);
+  border:1px solid rgba(74,63,57,.18);color:#6b5d54;font:600 11px/1 "Trebuchet MS",system-ui,sans-serif;
+  letter-spacing:.4px;text-decoration:none;opacity:.72;-webkit-tap-highlight-color:transparent;
+  transition:opacity .15s ease}
+.lgr22:hover,.lgr22:focus{opacity:1}
+.lgr22 svg{width:12px;height:12px;display:block}
+@media (max-width:520px){.lgr22{font-size:10px;padding:3px 8px 3px 6px}}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="ui">
+  <div class="btn" id="gas"><span class="arrow">▲</span>GAS</div>
+  <div class="btn" id="broms"><span class="arrow">▼</span>BROMS</div>
+  <div id="info">?</div>
+  <div id="vand">
+    <div class="vand-ikon" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="1em" height="1em" fill="none" stroke="#4a3f39" stroke-width="4" stroke-linejoin="round">
+        <rect x="18" y="6" width="28" height="52" rx="7" fill="#fffaf3"/>
+        <path d="M27 12h10" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="vand-text">Vänd på telefonen</div>
+    <div class="vand-liten">Spelet spelas liggande</div>
+  </div>
+  <div id="panel"><div id="card">
+    <h2>Vad händer i backen?</h2>
+    <p>När du håller in <b>GAS</b> blir bilen snabbare och snabbare. Det kallas <b>acceleration</b>.</p>
+    <p>När du håller in <b>BROMS</b> blir bilen långsammare. Det är också acceleration – fast åt andra hållet.</p>
+    <p>I en brant backe drar <b>gravitationen</b> bilen nedåt, även om du inte gasar. Ta fart innan backen!</p>
+    <p>Mätaren uppe i hörnet visar hur fort bilen åker just nu.</p>
+    <p>Gasar du för hårt på en gång reser sig bilen på bakhjulen – och då kan den <b>välta bakåt</b>. Bromsar du hårt i full fart tippar den <b>framåt</b>. Aj aj aj! Men det gör inget, bilen reser sig igen.</p>
+    <button id="close">Jag fattar!</button>
+  </div></div>
+</div>
+<script src="ljud/lines.js"></script>
+<script src="ljud/rosten.js"></script>
+<script src="kotten.js"></script>
+<script src="sma-ljud.js"></script>
+<script src="app.js"></script>
+
+<!-- Lgr22: diskret länk till lärarsidan -->
+<a class="lgr22" href="larare.html" title="Lärarsida: vad spelet tränar och koppling till Lgr22" aria-label="Lärarsida med koppling till Lgr22">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/>
+  </svg>
+  Lgr22
+</a>
+
+<script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+<p class="rostkredit"><a href="larare.html#rosten">Röst: OmniVoice (k2-fsa, CC BY-NC) · Higgs Materials/Boson AI · Meta Llama 3</a></p>
+</body>
+</html>
