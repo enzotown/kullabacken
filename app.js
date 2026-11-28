@@ -486,19 +486,24 @@ function drawHUD() {
   ctx.save();
   ctx.scale(s, s);
 
-  // fart
+  // Skolappars Kotten-knapp sitter 56 px stor, 12 px från övre vänstra hörnet.
+  // Håll den rutan fri: fartkortet flyttas in till höger, eller nedanför om det inte får plats.
+  const starW0 = 212, starX0 = VW - infoZone - starW0;
+  const badgeR = 76 / s;                       // 12 + 56 px + luft, i HUD-enheter
   const speedW = 200;
-  card(24, 20, speedW, 92);
+  let hudX = Math.max(24, badgeR), hudY = 20;
+  if (hudX + speedW + 14 > starX0) { hudX = 24; hudY = badgeR + 4; }
+  card(hudX, hudY, speedW, 92);
   ctx.fillStyle = '#a08e80'; ctx.font = 'bold 12px "Trebuchet MS", sans-serif'; ctx.textAlign = 'left';
-  ctx.fillText('FART', 44, 46);
+  ctx.fillText('FART', hudX + 20, hudY + 26);
   ctx.fillStyle = '#4a3f39'; ctx.font = 'bold 40px "Trebuchet MS", sans-serif';
-  ctx.fillText(Math.round(Math.abs(car.v) * 0.16) + '', 44, 88);
+  ctx.fillText(Math.round(Math.abs(car.v) * 0.16) + '', hudX + 20, hudY + 68);
   ctx.font = 'bold 15px "Trebuchet MS", sans-serif';  ctx.fillStyle = '#a08e80';
-  ctx.fillText('km/h', 152, 88);
+  ctx.fillText('km/h', hudX + 128, hudY + 68);
   // fartbar
   const bw = 112, k = Math.min(1, Math.abs(car.v) / 880);
-  ctx.fillStyle = '#eee3d6'; roundRect(112, 60, bw, 12, 6); ctx.fill();
-  ctx.fillStyle = k > 0.8 ? '#ef8064' : '#63bda8'; roundRect(112, 60, Math.max(6, bw * k), 12, 6); ctx.fill();
+  ctx.fillStyle = '#eee3d6'; roundRect(hudX + 88, hudY + 40, bw, 12, 6); ctx.fill();
+  ctx.fillStyle = k > 0.8 ? '#ef8064' : '#63bda8'; roundRect(hudX + 88, hudY + 40, Math.max(6, bw * k), 12, 6); ctx.fill();
 
   // stjärnor (alltid till vänster om ?-knappen)
   const starW = 212, starX = VW - infoZone - starW;
@@ -509,7 +514,7 @@ function drawHUD() {
 
   // backe – läggs i utrymmet mellan fart och stjärnor
   const deg = Math.round(Math.atan(slopeAt(car.x)) * 180 / Math.PI);
-  const leftEdge = 24 + speedW + 14, rightEdge = starX - 14;
+  const leftEdge = hudX + speedW + 14, rightEdge = starX - 14;
   let backeW = 220, backeX = VW / 2 - backeW / 2;
   if (backeX + backeW > rightEdge) backeX = rightEdge - backeW;
   if (backeX < leftEdge) backeX = leftEdge;
